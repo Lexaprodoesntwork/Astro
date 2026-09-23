@@ -1,0 +1,49 @@
+---
+import type { GetStaticPaths } from 'astro';
+import type { PokemonListResponse } from '../../interfaces/pokemon-list.response';
+import MainLayout from '../../layouts/MainLayout.astro';
+
+export const getStaticPaths = (async () => {
+  const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+  const { results } = (await resp.json()) as PokemonListResponse;
+
+  return results.map((pokemon) => ({
+    params: { name: pokemon.name },
+    props: { name: pokemon.name, url: pokemon.url },
+  }));
+}) satisfies GetStaticPaths;
+
+const { name } = Astro.params;
+const { url } = Astro.props;
+
+const id = url.split('/').at(-2);
+const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+---
+
+<MainLayout title={`Pokémon #${id} ${name}`}>
+  <section class="mt-10 mx-10 flex flex-col justify-center items-center">
+    <div class="flex flex-col items-start w-full max-w-md">
+      <button
+        onclick="history.back()"
+        class="text-blue-500 hover:underline cursor-pointer mb-2"
+      >
+        Regresar
+      </button>
+      <h1 class="text-5xl capitalize font-bold text-white">{name}</h1>
+    </div>
+
+    <div class="flex flex-col items-center justify-center mt-5">
+      <img
+        transition:name={`${name}-image`}
+        src={imageUrl}
+        alt={name}
+        class="w-60 h-60"
+      />
+
+      <audio controls class="mt-5">
+        <source src={audioSrc} type="audio/ogg" />
+      </audio>
+    </div>
+  </section>
+</MainLayout>

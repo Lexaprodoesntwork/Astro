@@ -2,6 +2,9 @@
 import type { GetStaticPaths } from 'astro';
 import type { PokemonListResponse } from '../../interfaces/pokemon-list.response';
 import MainLayout from '../../layouts/MainLayout.astro';
+import PokemonCard from '../../components/pokemons/PokemonCard.astro';
+import Title from '../../components/shared/title.astro';
+import { Icon } from 'astro-icon/components';
 
 export const getStaticPaths = (async () => {
   const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
@@ -19,22 +22,26 @@ const { url } = Astro.props;
 const id = url.split('/').at(-2);
 const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
-import Title from '../../components/shared/title.astro';
 ---
 
-<MainLayout title={`Pokémon #${id} ${name}`}>
+<MainLayout
+  title={`Pokémon - #${id} ${name}`}
+  description={`Información sobre el pokémon ${name}`}
+  image={imageUrl}
+>
   <section class="mt-10 mx-10 flex flex-col justify-center items-center">
-    <div class="flex flex-col items-start w-full max-w-md">
-      <button
-        onclick="history.back()"
-        class="text-blue-500 hover:underline cursor-pointer mb-2"
-      >
-        Regresar
+    <div class="flex flex-row">
+      <div>
+        <button onclick="history.back()" class="text-blue-500 cursor-pointer">Regresar</button>
         <Title>{name}</Title>
+      </div>
+
+      <button id="btn-favorite" class="ml-4 cursor-pointer">
+        <Icon name="heart-outline" size={50} />
+        <Icon class="hidden" name="heart-full" size={50} />
       </button>
     </div>
 
-    <div class="flex flex-col items-center justify-center mt-5">
       <img
         transition:name={`${name}-image`}
         src={imageUrl}
@@ -42,9 +49,20 @@ import Title from '../../components/shared/title.astro';
         class="w-60 h-60"
       />
 
-      <audio controls class="mt-5">
-        <source src={audioSrc} type="audio/ogg" />
-      </audio>
-    </div>
+
+    <audio controls class="mt-5">
+      <source src={audioSrc} type="audio/ogg" />
+    </audio>
   </section>
+  <style>
+  @reference "../../styles/global.css";
+
+  a {
+    @apply hover:underline text-blue-500;
+  }
+
+  #btn-favorite {
+    @apply hover:animate-pulse;
+  }
+</style>
 </MainLayout>

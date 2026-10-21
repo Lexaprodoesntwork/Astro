@@ -68,10 +68,11 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
 </MainLayout>
 
 <script>
-  interface FavoritePokemon {
-    name: string;
-    id: number;
-  }
+import type { FavoritePokemon } from '../../interfaces/favorite-pokemons';
+  // interface FavoritePokemon {
+  //   name: string;
+  //   id: number;
+  // }
 
   const handlePageLoad = () => {
     let favoritePokemons: FavoritePokemon[] = JSON.parse(

@@ -36,7 +36,7 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
         <Title>{name}</Title>
       </div>
 
-      <button id="btn-favorite" class="ml-4 cursor-pointer">
+      <button id="btn-favorite" class="ml-4 cursor-pointer" data-name={name} data-id={id}> 
         <Icon name="heart-outline" size={50} />
         <Icon class="hidden" name="heart-full" size={50} />
       </button>
@@ -52,6 +52,7 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
 
     <audio controls class="mt-5">
       <source src={audioSrc} type="audio/ogg" />
+      
     </audio>
   </section>
   <style>
@@ -66,3 +67,27 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
   }
 </style>
 </MainLayout>
+
+<script>
+  interface FavoritePokemon {
+    name: string;
+    id: number;
+  }
+document.addEventListener('astro:page-load', () => {
+  const btnFavorite = document.querySelector(
+    '#btn-favorite'
+  ) as HTMLButtonElement;
+  
+  if (!btnFavorite) return;
+
+  const name = btnFavorite.dataset.name;
+  const id = btnFavorite.dataset.id;
+
+  const handleToggleClick = () => {
+    console.log({ name, id });
+  };
+
+  btnFavorite.removeEventListener('click', handleToggleClick);
+  btnFavorite.addEventListener('click', handleToggleClick);
+});
+</script>

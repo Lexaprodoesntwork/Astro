@@ -32,40 +32,39 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
   <section class="mt-10 mx-10 flex flex-col justify-center items-center">
     <div class="flex flex-row">
       <div>
-        <button onclick="history.back()" class="text-blue-500 cursor-pointer">Regresar</button>
+        <button onclick="history.back()" class="text-blue-500">Regresar</button>
         <Title>{name}</Title>
       </div>
 
-      <button id="btn-favorite" class="ml-4 cursor-pointer" data-name={name} data-id={id}> 
-        <Icon name="heart-outline" size={50} />
-        <Icon class="hidden" name="heart-full" size={50} />
+      <button id="btn-favorite" class="ml-4" data-name={name} data-id={id}>
+        <Icon data-outline name="heart-outline" size={50} />
+        <Icon data-full class="hidden" name="heart-full" size={50} />
       </button>
     </div>
 
-      <img
-        transition:name={`${name}-image`}
-        src={imageUrl}
-        alt={name}
-        class="w-60 h-60"
-      />
-
+    <img
+      transition:name={`${name}-image`}
+      src={imageUrl}
+      alt={name}
+      class="w-60 h-60"
+    />
 
     <audio controls class="mt-5">
       <source src={audioSrc} type="audio/ogg" />
-      
     </audio>
   </section>
+
   <style>
-  @reference "../../styles/global.css";
+    @reference "../../styles/global.css";
 
-  a {
-    @apply hover:underline text-blue-500;
-  }
+    a {
+      @apply hover:underline text-blue-500;
+    }
 
-  #btn-favorite {
-    @apply hover:animate-pulse;
-  }
-</style>
+    #btn-favorite {
+      @apply hover:animate-pulse;
+    }
+  </style>
 </MainLayout>
 
 <script>
@@ -75,21 +74,54 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
   }
 
   const handlePageLoad = () => {
+    let favoritePokemons: FavoritePokemon[] = JSON.parse(
+      localStorage.getItem('favorites') ?? '[]'
+    );
+
     const btnFavorite = document.querySelector(
       '#btn-favorite'
     ) as HTMLButtonElement;
-    
+
     if (!btnFavorite) return;
 
-    const name = btnFavorite.dataset.name;
-    const id = btnFavorite.dataset.id;
+    const name = btnFavorite.dataset.name ?? '';
+    const id = btnFavorite.dataset.id ?? '';
 
-    const handleClick = () => {
-      console.log({ name, id });
+    const heartOutline = btnFavorite.querySelector(
+      '[data-outline]'
+    ) as HTMLElement;
+
+    const heartFull = btnFavorite.querySelector(
+      '[data-full]'
+    ) as HTMLElement;
+
+    const toggleFavorite = () => {
+      const isFavorite = favoritePokemons.some((fav) => fav.name === name);
+
+      if (isFavorite) {
+        favoritePokemons = favoritePokemons.filter((fav) => fav.name !== name);
+      } else {
+        favoritePokemons.push({
+          id: +id,
+          name: name,
+        });
+      }
+
+      localStorage.setItem('favorites', JSON.stringify(favoritePokemons));
     };
 
-    btnFavorite.removeEventListener('click', handleClick);
-    btnFavorite.addEventListener('click', handleClick);
+    const handleClick = () => {
+      heartOutline.classList.toggle('hidden');
+      heartFull.classList.toggle('hidden');
+      toggleFavorite();
+    };
+
+btnFavorite.addEventListener('click', () => {
+  heartOutline.classList.toggle('hidden');
+  heartFull.classList.toggle('hidden');
+
+  toggleFavorite();
+});
   };
 
   document.addEventListener('astro:page-load', handlePageLoad);

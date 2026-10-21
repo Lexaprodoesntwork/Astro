@@ -73,21 +73,24 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
     name: string;
     id: number;
   }
-document.addEventListener('astro:page-load', () => {
-  const btnFavorite = document.querySelector(
-    '#btn-favorite'
-  ) as HTMLButtonElement;
-  
-  if (!btnFavorite) return;
 
-  const name = btnFavorite.dataset.name;
-  const id = btnFavorite.dataset.id;
+  const handlePageLoad = () => {
+    const btnFavorite = document.querySelector(
+      '#btn-favorite'
+    ) as HTMLButtonElement;
+    
+    if (!btnFavorite) return;
 
-  const handleToggleClick = () => {
-    console.log({ name, id });
+    const name = btnFavorite.dataset.name;
+    const id = btnFavorite.dataset.id;
+
+    const handleClick = () => {
+      console.log({ name, id });
+    };
+
+    btnFavorite.removeEventListener('click', handleClick);
+    btnFavorite.addEventListener('click', handleClick);
   };
 
-  btnFavorite.removeEventListener('click', handleToggleClick);
-  btnFavorite.addEventListener('click', handleToggleClick);
-});
+  document.addEventListener('astro:page-load', handlePageLoad);
 </script>
